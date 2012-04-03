@@ -56,6 +56,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.io.StringWriter;
+import javax.swing.JCheckBox;
 
 public class SendSMS extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -129,7 +130,11 @@ public class SendSMS extends JFrame {
 	private JButton btnQuerySentSMSDLR;
 	private JButton btnClearSentSMSUrlList; 
 	private JButton btnRemoveSentSMSDLR;
-		
+	private JCheckBox chkSendBinary;
+	private JCheckBox chkSendAsFlashNotif;
+	private final JPanel panelGeneralMessageSettings;
+	private final JPanel panelOptionalSMSFields;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -216,7 +221,7 @@ public class SendSMS extends JFrame {
 		panelLog.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Log", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panelLog.setLayout(new CardLayout(0, 0));
 
-	    JList listSMS = new JList(smsLogListModel);
+		JList listSMS = new JList(smsLogListModel);
 		listSMS.setVisibleRowCount(-1);
 		JScrollPane pane = new JScrollPane(listSMS);
 
@@ -230,8 +235,8 @@ public class SendSMS extends JFrame {
 		panelSMSData.add(lblMessage);
 		panelSMSData.add(scrollPane);
 
-		final JPanel panelGeneralMessageSettings = new JPanel();
-		panelGeneralMessageSettings.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "General Message Settings", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panelGeneralMessageSettings = new JPanel();
+		panelGeneralMessageSettings.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "General SMS Settings", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 
 		JLabel label_4 = new JLabel("DataCoding:");
 		label_4.setBounds(20, 31, 77, 14);
@@ -283,46 +288,46 @@ public class SendSMS extends JFrame {
 		txtValidityPeriod.setToolTipText("HTTP format: \"HH:mm\"  , SMPP format: “YYMMDDhhmmsstnnp\" - “000011060755000R“ (means 11 days, 6 hours, 7 minutes, 55 seconds from now.)");
 		txtValidityPeriod.setColumns(10);
 
-		JPanel panel_8 = new JPanel();
-		panel_8.setBounds(12, 112, 503, 139);
-		panel_8.setBorder(new TitledBorder(null, "Optional ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panelSMSData.add(panel_8);
-		panel_8.setLayout(null);
+		panelOptionalSMSFields = new JPanel();
+		panelOptionalSMSFields.setBounds(12, 112, 503, 139);
+		panelOptionalSMSFields.setBorder(new TitledBorder(null, "Optional ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelSMSData.add(panelOptionalSMSFields);
+		panelOptionalSMSFields.setLayout(null);
 
 		JLabel lblClientCorrelator = new JLabel("Client Correlator:");
 		lblClientCorrelator.setBounds(10, 21, 112, 14);
-		panel_8.add(lblClientCorrelator);
+		panelOptionalSMSFields.add(lblClientCorrelator);
 
 		txtSMSClientCorrelator = new JTextField();
 		txtSMSClientCorrelator.setBounds(132, 21, 359, 20);
-		panel_8.add(txtSMSClientCorrelator);
+		panelOptionalSMSFields.add(txtSMSClientCorrelator);
 		txtSMSClientCorrelator.setColumns(10);
 
 		JLabel lblNotifyUrl = new JLabel("Notify URL:");
 		lblNotifyUrl.setBounds(10, 47, 112, 14);
-		panel_8.add(lblNotifyUrl);
+		panelOptionalSMSFields.add(lblNotifyUrl);
 
 		txtSMSNotifyURL = new JTextField();
 		txtSMSNotifyURL.setBounds(132, 47, 359, 20);
-		panel_8.add(txtSMSNotifyURL);
+		panelOptionalSMSFields.add(txtSMSNotifyURL);
 		txtSMSNotifyURL.setColumns(10);
 
 		JLabel lblSenderName = new JLabel("Sender Name:");
 		lblSenderName.setBounds(10, 75, 112, 14);
-		panel_8.add(lblSenderName);
+		panelOptionalSMSFields.add(lblSenderName);
 
 		txtSMSSenderName = new JTextField();
 		txtSMSSenderName.setBounds(132, 75, 359, 20);
-		panel_8.add(txtSMSSenderName);
+		panelOptionalSMSFields.add(txtSMSSenderName);
 		txtSMSSenderName.setColumns(10);
 
 		JLabel lblCallbackData = new JLabel("Callback Data:");
 		lblCallbackData.setBounds(10, 101, 112, 14);
-		panel_8.add(lblCallbackData);
+		panelOptionalSMSFields.add(lblCallbackData);
 
 		txtSMSCallbackData = new JTextField();
 		txtSMSCallbackData.setBounds(132, 101, 359, 20);
-		panel_8.add(txtSMSCallbackData);
+		panelOptionalSMSFields.add(txtSMSCallbackData);
 		txtSMSCallbackData.setColumns(10);
 
 		JButton btnSendSMS = new JButton("Send");
@@ -1233,10 +1238,8 @@ public class SendSMS extends JFrame {
 				if (!actionInProgress) {
 					if (rbSMPP.isSelected()) {
 						rbOneAPI.setSelected(false);
-						panelGeneralMessageSettings.setEnabled(true);
 					} else {
 						rbOneAPI.setSelected(true);
-						panelGeneralMessageSettings.setEnabled(false);
 					}
 				}
 			}
@@ -1250,10 +1253,8 @@ public class SendSMS extends JFrame {
 				if (!actionInProgress) {
 					if (rbOneAPI.isSelected()) {
 						rbSMPP.setSelected(false);
-						panelGeneralMessageSettings.setEnabled(false);
 					} else {
 						rbSMPP.setSelected(true);
-						panelGeneralMessageSettings.setEnabled(true);
 					}
 				}
 			}
@@ -1304,68 +1305,84 @@ public class SendSMS extends JFrame {
 		txtConfigSMPPPort.setBounds(191, 90, 325, 20);
 		panel_14.add(txtConfigSMPPPort);
 		getContentPane().add(tabbedPane);
-		
+
 		JPanel panelQuerySentSMS = new JPanel();
 		panelQuerySentSMS.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Query Sent SMS Delivery Status", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 
+		JPanel panel_6 = new JPanel();
+		panel_6.setBorder(new TitledBorder(null, "SMS Type", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_6.setLayout(null);
+
+		chkSendAsFlashNotif = new JCheckBox("Send as Flash Notification");
+		chkSendAsFlashNotif.setToolTipText("Send as flash notification.");
+		chkSendAsFlashNotif.setActionCommand("IsFlash");
+		chkSendAsFlashNotif.setBounds(16, 16, 210, 23);
+		panel_6.add(chkSendAsFlashNotif);
+
+		chkSendBinary = new JCheckBox("Send Binary Message");
+		chkSendBinary.setToolTipText("Message will be send as binary.");
+		chkSendBinary.setActionCommand("IsBinary");
+		chkSendBinary.setBounds(16, 36, 223, 23);
+		panel_6.add(chkSendBinary);
+
 		//Help data when using OneAPI simulator
-//		txtSMSSenderAddress.setText("tel:3855373346444");
-//		txtSMSRecipientAddress.setText("tel:38598434322");
-//		txtSMSMessageText.setText("Hello!");
-//		txtSMSClientCorrelator.setText("ref2781398");
-//		txtLBSAddress.setText("tel:38598434322;tel:385543543322");
-//		txtLBSRequestedAccuracy.setText("20");
-//		txtMORegistrationId.setText("regId32242");
-//		txtMOMaxBatchSize.setText("2");
-//		txtMODestAddress.setText("tel:3855373346444");
-//		txtMONotifyUrl.setText("http://www.test");
-//		txtDLRSenderAddress.setText("tel:3855373346444");
-//		txtDLRNotifiyUrl.setText("http://www.test");	
-			
+		//		txtSMSSenderAddress.setText("tel:3855373346444");
+		//		txtSMSRecipientAddress.setText("tel:38598434322");
+		//		txtSMSMessageText.setText("Hello!");
+		//		txtSMSClientCorrelator.setText("ref2781398");
+		//		txtLBSAddress.setText("tel:38598434322;tel:385543543322");
+		//		txtLBSRequestedAccuracy.setText("20");
+		//		txtMORegistrationId.setText("regId32242");
+		//		txtMOMaxBatchSize.setText("2");
+		//		txtMODestAddress.setText("tel:3855373346444");
+		//		txtMONotifyUrl.setText("http://www.test");
+		//		txtDLRSenderAddress.setText("tel:3855373346444");
+		//		txtDLRNotifiyUrl.setText("http://www.test");	
+
 		GroupLayout gl_panelSendSMS = new GroupLayout(panelSendSMS);
 		gl_panelSendSMS.setHorizontalGroup(
-			gl_panelSendSMS.createParallelGroup(Alignment.LEADING)
+				gl_panelSendSMS.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panelSendSMS.createSequentialGroup()
-					.addGap(8)
-					.addGroup(gl_panelSendSMS.createParallelGroup(Alignment.TRAILING)
-						.addComponent(panelLog, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 523, Short.MAX_VALUE)
-						.addComponent(panelSMSData, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 523, Short.MAX_VALUE))
-					.addGroup(gl_panelSendSMS.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panelSendSMS.createSequentialGroup()
-							.addGap(10)
-							.addComponent(panelGeneralMessageSettings, GroupLayout.DEFAULT_SIZE, 259, Short.MAX_VALUE)
-							.addGap(10))
-						.addGroup(Alignment.TRAILING, gl_panelSendSMS.createSequentialGroup()
-							.addGap(10)
-							.addComponent(panelQuerySentSMS, GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
-							.addContainerGap())))
-		);
+						.addGap(8)
+						.addGroup(gl_panelSendSMS.createParallelGroup(Alignment.LEADING)
+								.addComponent(panelSMSData, GroupLayout.DEFAULT_SIZE, 523, Short.MAX_VALUE)
+								.addComponent(panelLog, GroupLayout.DEFAULT_SIZE, 523, Short.MAX_VALUE))
+								.addGap(10)
+								.addGroup(gl_panelSendSMS.createParallelGroup(Alignment.LEADING)
+										.addComponent(panel_6, GroupLayout.DEFAULT_SIZE, 259, Short.MAX_VALUE)
+										.addComponent(panelQuerySentSMS, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(panelGeneralMessageSettings, GroupLayout.DEFAULT_SIZE, 259, Short.MAX_VALUE))
+										.addContainerGap())
+				);
 		gl_panelSendSMS.setVerticalGroup(
-			gl_panelSendSMS.createParallelGroup(Alignment.LEADING)
+				gl_panelSendSMS.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panelSendSMS.createSequentialGroup()
-					.addGap(9)
-					.addGroup(gl_panelSendSMS.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panelSendSMS.createSequentialGroup()
-							.addGap(1)
-							.addComponent(panelSMSData, GroupLayout.PREFERRED_SIZE, 291, GroupLayout.PREFERRED_SIZE))
-						.addComponent(panelGeneralMessageSettings, GroupLayout.PREFERRED_SIZE, 292, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_panelSendSMS.createParallelGroup(Alignment.TRAILING)
-						.addComponent(panelLog, GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
-						.addComponent(panelQuerySentSMS, GroupLayout.DEFAULT_SIZE, 231, Short.MAX_VALUE))
-					.addContainerGap())
-		);
-		
+						.addGroup(gl_panelSendSMS.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_panelSendSMS.createSequentialGroup()
+										.addGap(9)
+										.addComponent(panelGeneralMessageSettings, GroupLayout.PREFERRED_SIZE, 238, GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(panel_6, GroupLayout.DEFAULT_SIZE, 66, Short.MAX_VALUE))
+										.addGroup(gl_panelSendSMS.createSequentialGroup()
+												.addGap(10)
+												.addComponent(panelSMSData, GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE)))
+												.addPreferredGap(ComponentPlacement.UNRELATED)
+												.addGroup(gl_panelSendSMS.createParallelGroup(Alignment.TRAILING)
+														.addComponent(panelLog, GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
+														.addComponent(panelQuerySentSMS, GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE))
+														.addContainerGap())
+				);
+
 		JPanel panel_23 = new JPanel();
 		panel_23.setLayout(new CardLayout(0, 0));
-		
+
 		JScrollPane scrollPane_4 = new JScrollPane((Component) null);
 		panel_23.add(scrollPane_4, "name_118303183524506");
-		
-	    listSentMessgesUrl = new JList(sentSMSUrlLogListModel);
+
+		listSentMessgesUrl = new JList(sentSMSUrlLogListModel);
 		listSentMessgesUrl.setVisibleRowCount(-1);
 		scrollPane_4.setViewportView(listSentMessgesUrl);
-		
+
 		btnQuerySentSMSDLR = new JButton("Query");
 		btnQuerySentSMSDLR.setEnabled(false);
 		btnQuerySentSMSDLR.addActionListener(new ActionListener() {
@@ -1373,15 +1390,15 @@ public class SendSMS extends JFrame {
 				querySelUrl();
 			}
 		});
-		
-	    btnClearSentSMSUrlList = new JButton("Clear");
-	    btnClearSentSMSUrlList.setEnabled(false);
+
+		btnClearSentSMSUrlList = new JButton("Clear");
+		btnClearSentSMSUrlList.setEnabled(false);
 		btnClearSentSMSUrlList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				clearUrlList();
 			}
 		});
-		
+
 		btnRemoveSentSMSDLR = new JButton("Remove");
 		btnRemoveSentSMSDLR.setEnabled(false);
 		btnRemoveSentSMSDLR.addActionListener(new ActionListener() {
@@ -1391,31 +1408,31 @@ public class SendSMS extends JFrame {
 		});
 		GroupLayout gl_panelQuerySentSMS = new GroupLayout(panelQuerySentSMS);
 		gl_panelQuerySentSMS.setHorizontalGroup(
-			gl_panelQuerySentSMS.createParallelGroup(Alignment.LEADING)
+				gl_panelQuerySentSMS.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panelQuerySentSMS.createSequentialGroup()
-					.addGap(4)
-					.addComponent(panel_23, GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
-					.addGap(10)
-					.addGroup(gl_panelQuerySentSMS.createParallelGroup(Alignment.LEADING)
-						.addComponent(btnQuerySentSMSDLR, GroupLayout.PREFERRED_SIZE, 81, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnRemoveSentSMSDLR, GroupLayout.PREFERRED_SIZE, 81, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnClearSentSMSUrlList, GroupLayout.PREFERRED_SIZE, 81, GroupLayout.PREFERRED_SIZE))
-					.addGap(4))
-		);
+						.addGap(4)
+						.addComponent(panel_23, GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
+						.addGap(10)
+						.addGroup(gl_panelQuerySentSMS.createParallelGroup(Alignment.LEADING)
+								.addComponent(btnQuerySentSMSDLR, GroupLayout.PREFERRED_SIZE, 81, GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnRemoveSentSMSDLR, GroupLayout.PREFERRED_SIZE, 81, GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnClearSentSMSUrlList, GroupLayout.PREFERRED_SIZE, 81, GroupLayout.PREFERRED_SIZE))
+								.addGap(4))
+				);
 		gl_panelQuerySentSMS.setVerticalGroup(
-			gl_panelQuerySentSMS.createParallelGroup(Alignment.LEADING)
+				gl_panelQuerySentSMS.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panelQuerySentSMS.createSequentialGroup()
-					.addGap(4)
-					.addGroup(gl_panelQuerySentSMS.createParallelGroup(Alignment.LEADING)
-						.addComponent(panel_23, GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE)
-						.addGroup(gl_panelQuerySentSMS.createSequentialGroup()
-							.addComponent(btnQuerySentSMSDLR)
-							.addGap(11)
-							.addComponent(btnRemoveSentSMSDLR)
-							.addGap(2)
-							.addComponent(btnClearSentSMSUrlList)))
-					.addGap(7))
-		);
+						.addGap(4)
+						.addGroup(gl_panelQuerySentSMS.createParallelGroup(Alignment.LEADING)
+								.addComponent(panel_23, GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE)
+								.addGroup(gl_panelQuerySentSMS.createSequentialGroup()
+										.addComponent(btnQuerySentSMSDLR)
+										.addGap(11)
+										.addComponent(btnRemoveSentSMSDLR)
+										.addGap(2)
+										.addComponent(btnClearSentSMSUrlList)))
+										.addGap(7))
+				);
 		panelQuerySentSMS.setLayout(gl_panelQuerySentSMS);
 		panelGeneralMessageSettings.setLayout(null);
 		panelGeneralMessageSettings.add(label_4);
@@ -1462,28 +1479,21 @@ public class SendSMS extends JFrame {
 			}
 
 			client = new SMSClient();	
-					
-			boolean enableControls = client.getSenderType().equals(SenderType.ONEAPI);
-			txtSMSNotifyURL.setEnabled(enableControls);
-			txtSMSCallbackData.setEnabled(enableControls);
-			txtSMSClientCorrelator.setEnabled(enableControls);
-			txtSMSSenderName.setEnabled(enableControls);				
-			listSentMessgesUrl.setEnabled(enableControls);
 			
-			this.setUrlLogButtonsStatus();
-				
+			setControlsStatus();
+
 			addDeliveryReportLisntener();
 			addIncomingMessageLisntener();		
 
 			smsLogListModel.removeElement("Initializing...");
 			smsLogListModel.addElement("Successfully initialized.");
-	
+
 		} catch (Exception e) {
 			smsLogListModel.removeElement("Initializing...");
 			throw e;	
 		}
 	}
-
+	
 	protected void addDeliveryReportLisntener() throws DeliveryReportListenerException  {
 		client.addDeliveryReportListener(new DeliveryReportListener() {
 
@@ -1500,7 +1510,7 @@ public class SendSMS extends JFrame {
 
 	protected void addIncomingMessageLisntener() throws InboundMessageListenerException{
 		client.addInboundMessageListener(new InboundMessageListener() {		
-			
+
 			@Override
 			public void onMessageRetrieved(RetrieveSMSResponse arg0) {		
 				smsLogListModel.addElement("Inbound SMS: " + arg0.toString());		
@@ -1512,13 +1522,20 @@ public class SendSMS extends JFrame {
 		SMS sms = new SMS();
 		sms.setSenderAddress(txtSMSSenderAddress.getText());
 		this.addRecipients(sms);
-		sms.setMessageText(txtSMSMessageText.getText());
-		sms.setClientCorrelator(txtSMSClientCorrelator.getText());
-		sms.setNotifyURL(txtSMSNotifyURL.getText());
-		sms.setSenderName(txtSMSSenderName.getText());
-		sms.setCallbackData(txtSMSCallbackData.getText());
 
-		if (rbSMPP.isSelected()) {
+		if (!chkSendBinary.isSelected()) {
+			sms.setMessageText(txtSMSMessageText.getText());
+		} else {
+			sms.setMessageBinary(txtSMSMessageText.getText());
+		}
+
+		if (client.getSenderType().equals(SenderType.ONEAPI)) {
+			sms.setClientCorrelator(txtSMSClientCorrelator.getText());
+			sms.setNotifyURL(txtSMSNotifyURL.getText());
+			sms.setSenderName(txtSMSSenderName.getText());
+			sms.setCallbackData(txtSMSCallbackData.getText());
+
+		} else if (client.getSenderType().equals(SenderType.SMPP)) {
 			if (!txtDataCoding.getText().isEmpty()) {
 				sms.setDatacoding((byte)Integer.parseInt(txtDataCoding.getText()));
 			}
@@ -1551,7 +1568,7 @@ public class SendSMS extends JFrame {
 				sms.setProtocolid(Integer.parseInt(txtProtocolId.getText()));
 			}
 
-			if (txtDataCoding.getText().trim().equals(8)) {
+			if (txtDataCoding.getText().trim().equals(8) && (chkSendBinary.isSelected() == false)) {
 				sms.setEncodeUnicodeTextToBinary(true);
 			}
 
@@ -1562,26 +1579,30 @@ public class SendSMS extends JFrame {
 			if (txtDestinationTon.getText().isEmpty() || txtDestinationNpi.getText().isEmpty()) {
 				sms.setAutoResolveDestTonAndNpiOptions(true);
 			}
+
+			if (chkSendAsFlashNotif.isSelected()) {
+				sms.setSendAsFlashNotification(true);
+			}
 		}
 
 		try {
 			SMSSendResponse response = client.sendSMS(sms);
 			smsLogListModel.addElement("Send SMS Response: " +  response.toString());
-			
+
 			if (response.getResourceReference() != null) {
-				
+
 				String url = response.getResourceReference().getResourceURL();
 				if (url.contains("SendSMSService")) {
 					url = url.replace("SendSMSService", "QuerySMSService");
 				}
-							
+
 				if (!url.isEmpty()) { 
 					sentSMSUrlLogListModel.addElement(url);
 					listSentMessgesUrl.setSelectedIndex(sentSMSUrlLogListModel.size() - 1);
 					setUrlLogButtonsStatus();
 				}
 			}
-				
+
 		} catch (SendSmsException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Send Message",JOptionPane.ERROR_MESSAGE);
 		}
@@ -1599,17 +1620,17 @@ public class SendSMS extends JFrame {
 			} else {
 				response = client.locateTerminal(txtLBSAddress.getText(), Integer.parseInt(txtLBSRequestedAccuracy.getText()));
 			}
-			
-	    	StringWriter sw = new StringWriter();
+
+			StringWriter sw = new StringWriter();
 			ObjectMapper mapper = new ObjectMapper();
 			MappingJsonFactory jsonFactory = new MappingJsonFactory();
-	
+
 			JsonGenerator jsonGenerator = jsonFactory.createJsonGenerator(sw);
 			mapper.writeValue(jsonGenerator, response);
 			sw.close();
-					
+
 			String a = sw.getBuffer().toString();
-	    	System.out.println(a);
+			System.out.println(a);
 
 			lbsLogListModel.addElement("Terminal Location: " + response.toString());
 
@@ -1633,7 +1654,7 @@ public class SendSMS extends JFrame {
 			}	
 
 			dlrLogListModel.addElement("DLR: " + response.toString());	
-			
+
 		} catch (QueryDeliveryStatusException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Query SMS Delivery Status",JOptionPane.ERROR_MESSAGE);
 		}
@@ -1691,7 +1712,7 @@ public class SendSMS extends JFrame {
 		try {
 			SMSMessageReceiptSubscriptionResponse response = client.subscribeToReceiptNotifications(txtMODestAddress.getText(), txtMONotifyUrl.getText(), txtMOCriteria.getText(), txtMONotifFormat.getText(), txtMOClientCorrelator.getText(), txtMOCallbackData.getText());
 			moLogListModel.addElement("Subscription Response: " + response.toString());
-			
+
 		} catch (SubscribeToReceiptNotificationsException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Subscribe To Receipt Notifications", JOptionPane.ERROR_MESSAGE);
 		}		
@@ -1725,7 +1746,7 @@ public class SendSMS extends JFrame {
 			try {
 				SMSSendResponse response = client.sendHLRRequest(destination);
 				hlrLogListModel.addElement("HLR Request Response: " + response.toString());
-				
+
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(this,e.getMessage(), "Send HLR",JOptionPane.ERROR_MESSAGE);
 			}	
@@ -1863,7 +1884,7 @@ public class SendSMS extends JFrame {
 			sms.addRecipientAddress(recipient);
 		}	
 	}
-	
+
 	private void querySelUrl() {
 		// Get the index of all the selected items
 		int[] selectedIx = listSentMessgesUrl.getSelectedIndices();
@@ -1891,7 +1912,7 @@ public class SendSMS extends JFrame {
 		for (int i=0; i<selectedIx.length; i++) {   
 			sentSMSUrlLogListModel.remove(i);
 		}
-		
+
 		this.setUrlLogButtonsStatus();
 	}
 
@@ -1900,11 +1921,33 @@ public class SendSMS extends JFrame {
 		setUrlLogButtonsStatus();
 	}
 	
+	private void setControlsStatus() {
+		boolean oneAPIEnabled = client.getSenderType().equals(SenderType.ONEAPI);
+		
+		if (oneAPIEnabled) {
+			chkSendAsFlashNotif.setSelected(false);
+			chkSendBinary.setSelected(false);
+		}
+		
+		chkSendAsFlashNotif.setEnabled(!oneAPIEnabled);
+		chkSendBinary.setEnabled(!oneAPIEnabled);	
+						
+		Component[] comOptionalSMSFields = panelOptionalSMSFields.getComponents();  
+		for (int a = 0; a < comOptionalSMSFields.length; a++) {  
+			comOptionalSMSFields[a].setEnabled(oneAPIEnabled);  
+		} 
+			
+		Component[] comGeneralSettings = panelGeneralMessageSettings.getComponents();  
+		for (int a = 0; a < comGeneralSettings.length; a++) {  
+			comGeneralSettings[a].setEnabled(!oneAPIEnabled);  
+		} 
+			
+		this.setUrlLogButtonsStatus();
+	}
+
 	private void setUrlLogButtonsStatus() {
 		btnQuerySentSMSDLR.setEnabled(sentSMSUrlLogListModel.size() > 0 && client.getSenderType().equals(SenderType.ONEAPI));
 		btnClearSentSMSUrlList.setEnabled(sentSMSUrlLogListModel.size() > 0 && client.getSenderType().equals(SenderType.ONEAPI));
 		btnRemoveSentSMSDLR.setEnabled(sentSMSUrlLogListModel.size() > 0 && client.getSenderType().equals(SenderType.ONEAPI));	
 	}
-	
-	
 }
