@@ -191,7 +191,7 @@ public class SendSMS extends JFrame {
 		JScrollPane scrollPane = new JScrollPane((Component) null);
 		scrollPane.setBounds(145, 63, 368, 48);
 
-		JLabel lblMessage = new JLabel("Message Text:");
+		JLabel lblMessage = new JLabel("Message:");
 		lblMessage.setBounds(16, 66, 101, 14);
 
 		txtSMSMessageText = new JTextArea(3, 30);
@@ -1481,7 +1481,7 @@ public class SendSMS extends JFrame {
 			client = new SMSClient();	
 			
 			setControlsStatus();
-
+			
 			addDeliveryReportLisntener();
 			addIncomingMessageLisntener();		
 
@@ -1946,8 +1946,10 @@ public class SendSMS extends JFrame {
 	}
 
 	private void setUrlLogButtonsStatus() {
-		btnQuerySentSMSDLR.setEnabled(sentSMSUrlLogListModel.size() > 0 && client.getSenderType().equals(SenderType.ONEAPI));
-		btnClearSentSMSUrlList.setEnabled(sentSMSUrlLogListModel.size() > 0 && client.getSenderType().equals(SenderType.ONEAPI));
-		btnRemoveSentSMSDLR.setEnabled(sentSMSUrlLogListModel.size() > 0 && client.getSenderType().equals(SenderType.ONEAPI));	
+		boolean oneAPIEnabled = client.getSenderType().equals(SenderType.ONEAPI);
+		btnQuerySentSMSDLR.setEnabled(sentSMSUrlLogListModel.size() > 0 && oneAPIEnabled);
+		btnClearSentSMSUrlList.setEnabled(sentSMSUrlLogListModel.size() > 0 && oneAPIEnabled);
+		btnRemoveSentSMSDLR.setEnabled(sentSMSUrlLogListModel.size() > 0 && oneAPIEnabled);	
+		listSentMessgesUrl.setEnabled(sentSMSUrlLogListModel.size() > 0 && oneAPIEnabled);
 	}
 }
