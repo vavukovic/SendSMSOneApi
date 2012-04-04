@@ -55,6 +55,13 @@ import org.codehaus.jackson.map.MappingJsonFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.swing.JCheckBox;
 
@@ -134,6 +141,7 @@ public class SendSMS extends JFrame {
 	private JCheckBox chkSendAsFlashNotif;
 	private final JPanel panelGeneralMessageSettings;
 	private final JPanel panelOptionalSMSFields;
+	private final String SENT_SMS_URL_LIST_FILE_PATH = "sentSMSUrlList.txt";
 	
 	/**
 	 * Launch the application.
@@ -144,6 +152,7 @@ public class SendSMS extends JFrame {
 
 			frame.setIconImage((new ImageIcon("inb.jpg")).getImage());
 			frame.setVisible(true);		
+			frame.loadSentSMSUrlListFile();
 			frame.loadConfiguration();	
 			frame.setClient();		
 		} catch (Exception e) {
@@ -1326,18 +1335,18 @@ public class SendSMS extends JFrame {
 		panel_6.add(chkSendBinary);
 
 		//Help data when using OneAPI simulator
-		//		txtSMSSenderAddress.setText("tel:3855373346444");
-		//		txtSMSRecipientAddress.setText("tel:38598434322");
-		//		txtSMSMessageText.setText("Hello!");
-		//		txtSMSClientCorrelator.setText("ref2781398");
-		//		txtLBSAddress.setText("tel:38598434322;tel:385543543322");
-		//		txtLBSRequestedAccuracy.setText("20");
-		//		txtMORegistrationId.setText("regId32242");
-		//		txtMOMaxBatchSize.setText("2");
-		//		txtMODestAddress.setText("tel:3855373346444");
-		//		txtMONotifyUrl.setText("http://www.test");
-		//		txtDLRSenderAddress.setText("tel:3855373346444");
-		//		txtDLRNotifiyUrl.setText("http://www.test");	
+				txtSMSSenderAddress.setText("tel:3855373346444");
+				txtSMSRecipientAddress.setText("tel:38598434322");
+				txtSMSMessageText.setText("Hello!");
+				txtSMSClientCorrelator.setText("ref2781398");
+				txtLBSAddress.setText("tel:38598434322;tel:385543543322");
+				txtLBSRequestedAccuracy.setText("20");
+				txtMORegistrationId.setText("regId32242");
+				txtMOMaxBatchSize.setText("2");
+				txtMODestAddress.setText("tel:3855373346444");
+				txtMONotifyUrl.setText("http://www.test");
+				txtDLRSenderAddress.setText("tel:3855373346444");
+				txtDLRNotifiyUrl.setText("http://www.test");	
 
 		GroupLayout gl_panelSendSMS = new GroupLayout(panelSendSMS);
 		gl_panelSendSMS.setHorizontalGroup(
@@ -1588,7 +1597,7 @@ public class SendSMS extends JFrame {
 		try {
 			SMSSendResponse response = client.sendSMS(sms);
 			smsLogListModel.addElement("Send SMS Response: " +  response.toString());
-
+	
 			if (response.getResourceReference() != null) {
 
 				String url = response.getResourceReference().getResourceURL();
@@ -1600,6 +1609,15 @@ public class SendSMS extends JFrame {
 					sentSMSUrlLogListModel.addElement(url);
 					listSentMessgesUrl.setSelectedIndex(sentSMSUrlLogListModel.size() - 1);
 					setUrlLogButtonsStatus();
+					
+					try {	
+						FileWriter fw = new FileWriter(SENT_SMS_URL_LIST_FILE_PATH, true); 
+						fw.write(url.concat("\n"));//appends the string to the file 
+						fw.close();					
+						
+					} catch (Exception e) {
+						e.printStackTrace();
+					} 		
 				}
 			}
 
@@ -1906,19 +1924,25 @@ public class SendSMS extends JFrame {
 
 	private void removeSelUrl() {
 		// Get the index of all the selected items
-		int[] selectedIx = listSentMessgesUrl.getSelectedIndices();
-
-		// Get all the selected items using the indices
-		for (int i=0; i<selectedIx.length; i++) {   
-			sentSMSUrlLogListModel.remove(i);
+		Object[] selectedValues = listSentMessgesUrl.getSelectedValues();
+			
+		for (Object url : selectedValues) {
+			String valueToRemove = (String)url;
+			removeLineFromFile(valueToRemove);
+			sentSMSUrlLogListModel.removeElement(valueToRemove);
 		}
-
+	
 		this.setUrlLogButtonsStatus();
 	}
 
 	private void clearUrlList() {
 		sentSMSUrlLogListModel.clear();
 		setUrlLogButtonsStatus();
+		
+		File f=new File(SENT_SMS_URL_LIST_FILE_PATH);
+		if(f.exists() && f.isFile()){
+			f.delete();
+		}
 	}
 	
 	private void setControlsStatus() {
@@ -1952,4 +1976,76 @@ public class SendSMS extends JFrame {
 		btnRemoveSentSMSDLR.setEnabled(sentSMSUrlLogListModel.size() > 0 && oneAPIEnabled);	
 		listSentMessgesUrl.setEnabled(sentSMSUrlLogListModel.size() > 0 && oneAPIEnabled);
 	}
+	
+	private void loadSentSMSUrlListFile() {
+		if (!(new File(SENT_SMS_URL_LIST_FILE_PATH)).exists()) return; 
+
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(SENT_SMS_URL_LIST_FILE_PATH));  
+			String line = null;
+
+			//Read from the original file and write to the new 
+			//unless content matches data to be removed.
+			while ((line = br.readLine()) != null) {
+				sentSMSUrlLogListModel.addElement(line);
+			}
+
+			br.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void removeLineFromFile(String lineToRemove) {
+
+	    try {
+
+	      File inFile = new File(SENT_SMS_URL_LIST_FILE_PATH);
+	      
+	      if (!inFile.isFile()) {
+	        System.out.println("Parameter is not an existing file");
+	        return;
+	      }
+	       
+	      //Construct the new file that will later be renamed to the original filename. 
+	      File tempFile = new File(inFile.getAbsolutePath() + ".tmp");
+	      
+	      BufferedReader br = new BufferedReader(new FileReader(SENT_SMS_URL_LIST_FILE_PATH));
+	      PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
+	      
+	      String line = null;
+
+	      //Read from the original file and write to the new 
+	      //unless content matches data to be removed.
+	      while ((line = br.readLine()) != null) {
+	        
+	        if (!line.trim().equals(lineToRemove)) {
+
+	          pw.println(line);
+	          pw.flush();
+	        }
+	      }
+	      pw.close();
+	      br.close();
+	      
+	      //Delete the original file
+	      if (!inFile.delete()) {
+	        System.out.println("Could not delete file");
+	        return;
+	      } 
+	      
+	      //Rename the new file to the filename the original file had.
+	      if (!tempFile.renameTo(inFile))
+	        System.out.println("Could not rename file");
+	      
+	    }
+	    catch (FileNotFoundException ex) {
+	      ex.printStackTrace();
+	    }
+	    catch (IOException ex) {
+	      ex.printStackTrace();
+	    }
+	  }
 }
