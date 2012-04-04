@@ -1784,7 +1784,7 @@ public class SendSMS extends JFrame {
 
 			txtConfigHttpUsername.setText(config.getOneAPI().getAuthorization().getUsername());
 			txtConfigHttpPassword.setText(config.getOneAPI().getAuthorization().getPassword());
-			txtConfigRootMessagingUrl.setText(config.getOneAPI().getSmsMessagingRootUrl());
+			txtConfigRootMessagingUrl.setText(config.getOneAPI().getSmsMessagingBaseUrl());
 			txtConfigVersionOneAPISMS.setText(config.getOneAPI().getVersionOneAPISMS());
 			txtConfigRetrieverRegistrationID.setText(config.getOneAPI().getRetrieveInboundMessagesRegistrationId());		
 			txtConfigInboundRetrievingInterval.setText(String.valueOf(config.getOneAPI().getInboundMessagesRetrievingInterval()));
@@ -1813,7 +1813,7 @@ public class SendSMS extends JFrame {
 
 			config.getOneAPI().getAuthorization().setUsername(txtConfigHttpUsername.getText());
 			config.getOneAPI().getAuthorization().setPassword(txtConfigHttpPassword.getText());
-			config.getOneAPI().setSmsMessagingRootUrl(txtConfigRootMessagingUrl.getText());
+			config.getOneAPI().setSmsMessagingBaseUrl(txtConfigRootMessagingUrl.getText());
 			config.getOneAPI().setVersionOneAPISMS(txtConfigVersionOneAPISMS.getText());
 			config.getOneAPI().setRetrieveInboundMessagesRegistrationId(txtConfigRetrieverRegistrationID.getText());
 
