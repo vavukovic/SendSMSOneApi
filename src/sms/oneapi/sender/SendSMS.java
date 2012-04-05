@@ -132,8 +132,7 @@ public class SendSMS extends JFrame {
 	private JTextField txtConfigSMPPPort;
 	private JTextField txtProtocolId;
 	private JRadioButton rbOneAPI;
-	private JRadioButton rbSMPP;	
-	private JList listSentMessgesUrl;
+	private JRadioButton rbSMPP;		
 	private JButton btnQuerySentSMSDLR;
 	private JButton btnClearSentSMSUrlList; 
 	private JButton btnRemoveSentSMSDLR;
@@ -141,7 +140,14 @@ public class SendSMS extends JFrame {
 	private JCheckBox chkSendAsFlashNotif;
 	private final JPanel panelGeneralMessageSettings;
 	private final JPanel panelOptionalSMSFields;
-	private final String SENT_SMS_URL_LIST_FILE_PATH = "sentSMSUrlList.txt";
+	private final String SENT_SMS_URL_LIST_FILE_PATH = "sentSMSUrlList.txt";	
+	private JList listSMS;
+	private JList listHLR;	
+	private JList listRegistration;
+	private JList listLBS;
+	private JList listDLR ;
+	private JList listSentMessgesUrl;
+	private JList listMO;
 	
 	/**
 	 * Launch the application.
@@ -230,7 +236,7 @@ public class SendSMS extends JFrame {
 		panelLog.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Log", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panelLog.setLayout(new CardLayout(0, 0));
 
-		JList listSMS = new JList(smsLogListModel);
+		listSMS = new JList(smsLogListModel);
 		listSMS.setVisibleRowCount(-1);
 		JScrollPane pane = new JScrollPane(listSMS);
 
@@ -362,7 +368,7 @@ public class SendSMS extends JFrame {
 		panel_9.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Log", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panel_9.setLayout(new CardLayout(0, 0));
 
-		JList listLBS = new JList(lbsLogListModel);
+	    listLBS = new JList(lbsLogListModel);
 		listLBS.setVisibleRowCount(-1);
 		JScrollPane scrollPane_1 = new JScrollPane(listLBS);
 		panel_9.add(scrollPane_1, "name_5388036062334");
@@ -466,7 +472,7 @@ public class SendSMS extends JFrame {
 		panelHLRLog.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Log", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panelHLRLog.setLayout(new CardLayout(0, 0));
 
-		JList listHLR = new JList(hlrLogListModel);	
+	    listHLR = new JList(hlrLogListModel);	
 		listHLR.setVisibleRowCount(-1);
 		JScrollPane pane1 = new JScrollPane(listHLR);	
 		panelHLRLog.add(pane1, "name_391641949992302");
@@ -497,7 +503,7 @@ public class SendSMS extends JFrame {
 		JPanel panelDLRLog = new JPanel();
 		panelDLRLog.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Log", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 
-		JList listDLR = new JList(dlrLogListModel);
+		listDLR = new JList(dlrLogListModel);
 		listDLR.setVisibleRowCount(-1);
 		JScrollPane scrollPane_2 = new JScrollPane(listDLR);
 		scrollPane_2.setViewportView(listDLR);
@@ -920,7 +926,7 @@ public class SendSMS extends JFrame {
 		JPanel panelInboundLog = new JPanel();
 		panelInboundLog.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Log", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 
-		JList listMO = new JList(moLogListModel);
+		listMO = new JList(moLogListModel);
 		listMO.setVisibleRowCount(-1);
 		JScrollPane scrollPane_3 = new JScrollPane(listMO);
 		scrollPane_3.setViewportView(listMO);
@@ -1006,7 +1012,7 @@ public class SendSMS extends JFrame {
 		panel_5.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Log", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panel_5.setLayout(new CardLayout(0, 0));
 
-		JList listRegistration = new JList(registerSenderLogListModel);
+		listRegistration = new JList(registerSenderLogListModel);
 		listRegistration.setVisibleRowCount(-1);
 		JScrollPane pane2 = new JScrollPane(listRegistration);		
 		panel_5.add(pane2, "name_613671448272338");
@@ -1510,8 +1516,12 @@ public class SendSMS extends JFrame {
 			public void onDeliveryReportReceived(SMSSendDeliveryStatusResponse arg0, DLRType arg1) {
 				if (arg1.equals(DLRType.hlr)) {
 					hlrLogListModel.addElement("DLR: " + arg0.toString());	
+					listHLR.setSelectedIndex(hlrLogListModel.size() - 1);
+					listHLR.scrollRectToVisible(listHLR.getCellBounds(hlrLogListModel.size() - 1, hlrLogListModel.size() - 1));
 				} else {
 					smsLogListModel.addElement("DLR: " + arg0.toString());	
+					listSMS.setSelectedIndex(smsLogListModel.size() - 1);
+					listSMS.scrollRectToVisible(listSMS.getCellBounds(smsLogListModel.size() - 1, smsLogListModel.size() - 1));
 				}
 			}
 		});
@@ -1523,6 +1533,8 @@ public class SendSMS extends JFrame {
 			@Override
 			public void onMessageRetrieved(RetrieveSMSResponse arg0) {		
 				smsLogListModel.addElement("Inbound SMS: " + arg0.toString());		
+				listSMS.setSelectedIndex(smsLogListModel.size() - 1);
+				listSMS.scrollRectToVisible(listSMS.getCellBounds(smsLogListModel.size() - 1, smsLogListModel.size() - 1));
 			}
 		});
 	}
@@ -1597,7 +1609,9 @@ public class SendSMS extends JFrame {
 		try {
 			SMSSendResponse response = client.sendSMS(sms);
 			smsLogListModel.addElement("Send SMS Response: " +  response.toString());
-	
+			listSMS.setSelectedIndex(smsLogListModel.size() - 1);
+			listSMS.scrollRectToVisible(listSMS.getCellBounds(smsLogListModel.size() - 1, smsLogListModel.size() - 1));
+			
 			if (response.getResourceReference() != null) {
 
 				String url = response.getResourceReference().getResourceURL();
@@ -1608,6 +1622,7 @@ public class SendSMS extends JFrame {
 				if (!url.isEmpty()) { 
 					sentSMSUrlLogListModel.addElement(url);
 					listSentMessgesUrl.setSelectedIndex(sentSMSUrlLogListModel.size() - 1);
+					listSentMessgesUrl.scrollRectToVisible(listSentMessgesUrl.getCellBounds(sentSMSUrlLogListModel.size() - 1, sentSMSUrlLogListModel.size() - 1));
 					setUrlLogButtonsStatus();
 					
 					try {	
@@ -1647,10 +1662,9 @@ public class SendSMS extends JFrame {
 			mapper.writeValue(jsonGenerator, response);
 			sw.close();
 
-			String a = sw.getBuffer().toString();
-			System.out.println(a);
-
 			lbsLogListModel.addElement("Terminal Location: " + response.toString());
+			listLBS.setSelectedIndex(lbsLogListModel.size() - 1);
+			listLBS.scrollRectToVisible(listLBS.getCellBounds(lbsLogListModel.size() - 1, lbsLogListModel.size() - 1));
 
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Locate Terminal", JOptionPane.ERROR_MESSAGE);
@@ -1672,7 +1686,9 @@ public class SendSMS extends JFrame {
 			}	
 
 			dlrLogListModel.addElement("DLR: " + response.toString());	
-
+			listDLR.setSelectedIndex(dlrLogListModel.size() - 1);
+			listDLR.scrollRectToVisible(listDLR.getCellBounds(dlrLogListModel.size() - 1, dlrLogListModel.size() - 1));
+			
 		} catch (QueryDeliveryStatusException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Query SMS Delivery Status",JOptionPane.ERROR_MESSAGE);
 		}
@@ -1682,6 +1698,8 @@ public class SendSMS extends JFrame {
 		try {
 			SMSDeliveryReceiptSubscriptionResponse response = client.subscribeToDeliveryNotifications(txtDLRSenderAddress.getText(), txtDLRNotifiyUrl.getText(), txtDLRCriteria.getText(), txtDLRClientCorrelator.getText(), txtDLRCallbackData.getText());
 			dlrLogListModel.addElement("Subscription Response: " + response.toString());
+			listDLR.setSelectedIndex(dlrLogListModel.size() - 1);
+			listDLR.scrollRectToVisible(listDLR.getCellBounds(dlrLogListModel.size() - 1, dlrLogListModel.size() - 1));
 
 		} catch (SubscribeToDeliveryNotificationException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Subscribe To Delivery Notifications", JOptionPane.ERROR_MESSAGE);
@@ -1702,6 +1720,8 @@ public class SendSMS extends JFrame {
 			}	
 
 			dlrLogListModel.addElement("Cancelation Response: " + String.valueOf(response));
+			listDLR.setSelectedIndex(dlrLogListModel.size() - 1);
+			listDLR.scrollRectToVisible(listDLR.getCellBounds(dlrLogListModel.size() - 1, dlrLogListModel.size() - 1));
 
 		} catch (CancelDeliveryNotificationsException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Cancel Delivery Notifications", JOptionPane.ERROR_MESSAGE);
@@ -1720,7 +1740,9 @@ public class SendSMS extends JFrame {
 			}	
 
 			moLogListModel.addElement("Inbound SMS: " + response.toString());	
-
+			listMO.setSelectedIndex(moLogListModel.size() - 1);
+			listMO.scrollRectToVisible(listMO.getCellBounds(moLogListModel.size() - 1, moLogListModel.size() - 1));
+			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Retrieve Inbound Messages", JOptionPane.ERROR_MESSAGE);
 		}
@@ -1730,6 +1752,8 @@ public class SendSMS extends JFrame {
 		try {
 			SMSMessageReceiptSubscriptionResponse response = client.subscribeToReceiptNotifications(txtMODestAddress.getText(), txtMONotifyUrl.getText(), txtMOCriteria.getText(), txtMONotifFormat.getText(), txtMOClientCorrelator.getText(), txtMOCallbackData.getText());
 			moLogListModel.addElement("Subscription Response: " + response.toString());
+			listMO.setSelectedIndex(moLogListModel.size() - 1);
+			listMO.scrollRectToVisible(listMO.getCellBounds(moLogListModel.size() - 1, moLogListModel.size() - 1));
 
 		} catch (SubscribeToReceiptNotificationsException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Subscribe To Receipt Notifications", JOptionPane.ERROR_MESSAGE);
@@ -1752,6 +1776,8 @@ public class SendSMS extends JFrame {
 			}	
 
 			moLogListModel.addElement("Cancelation Response: " + String.valueOf(response));
+			listMO.setSelectedIndex(moLogListModel.size() - 1);
+			listMO.scrollRectToVisible(listMO.getCellBounds(moLogListModel.size() - 1, moLogListModel.size() - 1));
 
 		} catch (CancelReceiptNotificationsException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Cancel Receipt Notifications", JOptionPane.ERROR_MESSAGE);
@@ -1764,6 +1790,8 @@ public class SendSMS extends JFrame {
 			try {
 				SMSSendResponse response = client.sendHLRRequest(destination);
 				hlrLogListModel.addElement("HLR Request Response: " + response.toString());
+				listHLR.setSelectedIndex(hlrLogListModel.size() - 1);
+				listHLR.scrollRectToVisible(listHLR.getCellBounds(hlrLogListModel.size() - 1, hlrLogListModel.size() - 1));
 
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(this,e.getMessage(), "Send HLR",JOptionPane.ERROR_MESSAGE);
@@ -1914,7 +1942,9 @@ public class SendSMS extends JFrame {
 
 				SMSSendDeliveryStatusResponse response = client.queryDeliveryStatusByUrl(selUrl);
 				smsLogListModel.addElement("DLR: " + response.toString());	
-
+				listSMS.setSelectedIndex(smsLogListModel.size() - 1);
+				listSMS.scrollRectToVisible(listSMS.getCellBounds(smsLogListModel.size() - 1, smsLogListModel.size() - 1));
+				
 			} catch (QueryDeliveryStatusException e) {
 				JOptionPane.showMessageDialog(this, e.getMessage(), "Query SMS Delivery Status",JOptionPane.ERROR_MESSAGE);
 			}
@@ -1930,6 +1960,11 @@ public class SendSMS extends JFrame {
 			String valueToRemove = (String)url;
 			removeLineFromFile(valueToRemove);
 			sentSMSUrlLogListModel.removeElement(valueToRemove);
+			
+			if (!sentSMSUrlLogListModel.isEmpty()) {
+				listSentMessgesUrl.setSelectedIndex(sentSMSUrlLogListModel.getSize() - 1);
+				listSentMessgesUrl.scrollRectToVisible(listSentMessgesUrl.getCellBounds(sentSMSUrlLogListModel.size() - 1, sentSMSUrlLogListModel.size() - 1));
+			}
 		}
 	
 		this.setUrlLogButtonsStatus();
@@ -1991,6 +2026,12 @@ public class SendSMS extends JFrame {
 			}
 
 			br.close();
+			
+			if (!sentSMSUrlLogListModel.isEmpty()) {
+				listSentMessgesUrl.setSelectedIndex(sentSMSUrlLogListModel.size() - 1);
+				listSentMessgesUrl.scrollRectToVisible(listSentMessgesUrl.getCellBounds(sentSMSUrlLogListModel.size() - 1, sentSMSUrlLogListModel.size() - 1));
+			}
+			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
