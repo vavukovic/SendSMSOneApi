@@ -1340,19 +1340,23 @@ public class SendSMS extends JFrame {
 		chkSendBinary.setBounds(16, 36, 223, 23);
 		panel_6.add(chkSendBinary);
 
-		//Help data when using OneAPI simulator
-				txtSMSSenderAddress.setText("tel:3855373346444");
-				txtSMSRecipientAddress.setText("tel:38598434322");
-				txtSMSMessageText.setText("Hello!");
-				txtSMSClientCorrelator.setText("ref2781398");
-				txtLBSAddress.setText("tel:38598434322;tel:385543543322");
-				txtLBSRequestedAccuracy.setText("20");
-				txtMORegistrationId.setText("regId32242");
-				txtMOMaxBatchSize.setText("2");
-				txtMODestAddress.setText("tel:3855373346444");
-				txtMONotifyUrl.setText("http://www.test");
-				txtDLRSenderAddress.setText("tel:3855373346444");
-				txtDLRNotifiyUrl.setText("http://www.test");	
+				//TODO - Remove after testing - Help data when using OneAPI simulator
+//				txtSMSSenderAddress.setText("tel:3855373346444");
+//				txtSMSRecipientAddress.setText("tel:38598434322");
+		
+//				txtSMSSenderAddress.setText("tel:38598123456");
+//				txtSMSRecipientAddress.setText("tel:385199123456");
+//		
+//				txtSMSMessageText.setText("Hello!");
+//				txtSMSClientCorrelator.setText("ref2781398");
+//				txtLBSAddress.setText("tel:38598434322;tel:385543543322");
+//				txtLBSRequestedAccuracy.setText("20");
+//				txtMORegistrationId.setText("regId32242");
+//				txtMOMaxBatchSize.setText("2");
+//				txtMODestAddress.setText("tel:3855373346444");
+//				txtMONotifyUrl.setText("http://www.test");
+//				txtDLRSenderAddress.setText("tel:3855373346444");
+//				txtDLRNotifiyUrl.setText("http://www.test");	
 
 		GroupLayout gl_panelSendSMS = new GroupLayout(panelSendSMS);
 		gl_panelSendSMS.setHorizontalGroup(
@@ -1615,10 +1619,6 @@ public class SendSMS extends JFrame {
 			if (response.getResourceReference() != null) {
 
 				String url = response.getResourceReference().getResourceURL();
-				if (url.contains("SendSMSService")) {
-					url = url.replace("SendSMSService", "QuerySMSService");
-				}
-
 				if (!url.isEmpty()) { 
 					sentSMSUrlLogListModel.addElement(url);
 					listSentMessgesUrl.setSelectedIndex(sentSMSUrlLogListModel.size() - 1);
@@ -1771,7 +1771,7 @@ public class SendSMS extends JFrame {
 				response = client.cancelReceiptNotifications(txtMOSubscriptionId.getText());
 
 			} else { 
-				JOptionPane.showMessageDialog(this, "Please fill 'Resource Url' or 'Subscription Id' fields.", "Cancel Delivery Notifications",JOptionPane.ERROR_MESSAGE);	
+				JOptionPane.showMessageDialog(this, "Please fill 'Resource Url' or 'Subscription Id' fields.", "Cancel Receipt Notifications",JOptionPane.ERROR_MESSAGE);	
 				return;
 			}	
 
